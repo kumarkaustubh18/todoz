@@ -15,4 +15,6 @@ public interface todoService {
    ResponseEntity<task> findbyId(Long id);
 
     ResponseEntity<task> deletebyId(Long id);
+
+    ResponseEntity<task> toggleCompletedStatus(Long id);
 }

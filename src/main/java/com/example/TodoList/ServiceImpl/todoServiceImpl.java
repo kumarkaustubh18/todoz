@@ -66,4 +66,17 @@ public class todoServiceImpl implements todoService {
             return ResponseEntity.notFound().build(); // 404 Not Found
         }
     }
+
+    @Override
+    public ResponseEntity<task> toggleCompletedStatus(Long id) {
+        Optional<task> taskOptional = todo.findById(id);
+        if (taskOptional.isPresent()) {
+            task task = taskOptional.get();
+            task.setCompleted(!task.isCompleted());  // ✅ Toggle logic
+            todo.save(task);
+            return ResponseEntity.ok(task);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

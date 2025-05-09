@@ -40,4 +40,8 @@ public class todoController {
    public ResponseEntity<task> deleteTaskById(@PathVariable Long id) {
       return  todoservice.deletebyId(id);
    }
+   @PutMapping("/{id}/toggle")
+   public ResponseEntity<task> toggleTaskCompleted(@PathVariable Long id) {
+      return todoservice.toggleCompletedStatus(id);
+   }
 }

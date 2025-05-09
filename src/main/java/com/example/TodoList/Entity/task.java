@@ -11,8 +11,24 @@ public class task {
 
     private String description;
 
+    private boolean completed;
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
     // No-arg constructor
     public task() {
+    }
+
+    public task(Long id, String description, boolean completed) {
+        this.id = id;
+        this.description = description;
+        this.completed = completed;
     }
 
     // Getter and Setter
