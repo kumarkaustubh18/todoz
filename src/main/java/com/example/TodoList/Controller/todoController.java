@@ -27,7 +27,7 @@ public class todoController {
     return todoservice.getAllTasks();
    }
 
-   @PostMapping("/{id}/update")
+   @PutMapping("/{id}")
    public ResponseEntity<task> updateTaskById(@PathVariable Long id ,@RequestBody task updatedTask)
    {
       return todoservice.updateTaskById(id,updatedTask);
@@ -36,7 +36,7 @@ public class todoController {
    public ResponseEntity<task> getTaskById(@PathVariable Long id) {
      return  todoservice.findbyId(id);
    }
-   @GetMapping("/{id}/delete")
+   @DeleteMapping("/{id}")
    public ResponseEntity<task> deleteTaskById(@PathVariable Long id) {
       return  todoservice.deletebyId(id);
    }

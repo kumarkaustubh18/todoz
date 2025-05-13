@@ -7,11 +7,161 @@
 <h1>Task Manager</h1>
 
 <h2>Add Task</h2>
+
+<!-- Input for description only -->
 <input type="text" id="newDescription" placeholder="Task description">
-<button onclick="">Add</button>
+<button onclick="addTask()">Add</button>
+
+<p id="message"></p>
+
+<script>
+    function addTask() {
+        const description = document.getElementById('newDescription').value;
+
+        // Optional: Generate a random ID or let the backend assign one
+        const task = {
+            description: description
+        };
+
+        fetch('/tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(task)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Failed to add task");
+            }
+        })
+        .then(data => {
+            document.getElementById('message').textContent = "Task added successfully!";
+            document.getElementById('newDescription').value = ""; // Clear the input
+        })
+        .catch(error => {
+            document.getElementById('message').textContent = "Error: " + error.message;
+        });
+    }
+</script>
+
+<h2>Delete Task</h2>
+<input type="number" id="deleteId" placeholder="Enter Task ID">
+<button onclick="deleteTask()">Delete</button>
+<p id="deleteMessage"></p>
+<script>
+function deleteTask() {
+const id = document.getElementById('deleteId').value;
+
+if (!id) {
+document.getElementById('deleteMessage').textContent = "Please enter a valid task ID.";
+return;
+}
+
+fetch(`/tasks/${id}`, {
+method: 'DELETE'
+})
+.then(response => {
+if (response.status === 204) {
+document.getElementById('deleteMessage').textContent = `Task with ID ${id} deleted successfully.`;
+} else if (response.status === 404) {
+document.getElementById('deleteMessage').textContent = `Task with ID ${id} not found.`;
+} else {
+return response.text().then(text => {
+throw new Error(`Unexpected status ${response.status}: ${text}`);
+});
+}
+})
+.catch(error => {
+document.getElementById('deleteMessage').textContent = "Error: " + error.message;
+});
+
+document.getElementById('deleteId').value = "";
+}
+</script>
 
 
+<h2>Task List</h2>
+<button onclick="getAllTasks()">Get All Tasks</button>
+<ul id="taskList"></ul>
+<script>
+function getAllTasks() {
+fetch('/tasks')  // Sends a GET request to http://localhost:9090/tasks
+.then(response => {
+if (!response.ok) {
+throw new Error("Failed to fetch tasks");
+}
+return response.json();  // Converts JSON response into a JavaScript object
+})
+.then(tasks => {
+const taskList = document.getElementById('taskList');
+taskList.innerHTML = ''; // Clear any existing list items
 
+// Loop through the array of tasks
+tasks.forEach(task => {
+const li = document.createElement('li');
+li.textContent = `ID: ${task.id}, Description: ${task.description}`;
+taskList.appendChild(li); // Add task to the list
+});
+})
+.catch(error => {
+alert("Error: " + error.message);  // Show error if fetch fails
+});
+}
+</script>
+//
+<h2>Update Task</h2>
+<input type="number" id="updateTaskId" placeholder="Enter Task ID">
+<input type="text" id="updateDescription" placeholder="Enter New Description">
+<button onclick="updateTask()">Update Task</button>
+
+<p id="updateMessage"></p>
+
+<script>
+    function updateTask() {
+        const taskId = document.getElementById('updateTaskId').value;
+        const newDescription = document.getElementById('updateDescription').value;
+
+        if (!taskId || !newDescription) {
+            document.getElementById('updateMessage').textContent = "Both ID and description are required.";
+            return;
+        }
+
+        const updatedTask = {
+            description: newDescription
+        };
+
+        fetch(`/tasks/${taskId}`, {
+            method: 'PUT', // Make sure your controller uses @PutMapping("/{id}")
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedTask)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else if (response.status === 404) {
+                throw new Error("Task not found");
+            } else {
+                throw new Error("Failed to update task");
+            }
+        })
+        .then(data => {
+            document.getElementById('updateMessage').textContent = "Task updated successfully!";
+            document.getElementById('updateTaskId').value = "";
+            document.getElementById('updateDescription').value = "";
+        })
+        .catch(error => {
+            document.getElementById('updateMessage').textContent = "Error: " + error.message;
+        });
+    }
+</script>
+
+//
+</script>
 <script>
     const baseUrl = "http://localhost:9090/tasks";
 
